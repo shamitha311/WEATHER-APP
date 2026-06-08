@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Weather Forecast App — College Mini-Project with live weather, map, themes & more." />
+  <title>Weather Forecast App</title>
+
+  <!-- Google Fonts: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet CSS (for the map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="header">
+    <div class="header-inner">
+
+      <!-- Left: Logo -->
+      <div class="logo">
+        <span class="logo-icon">⛅</span>
+        <div>
+          <h1 class="logo-title">Weather Forecast</h1>
+          <p class="logo-sub" id="greeting">Good day! 👋</p>
+        </div>
+      </div>
+
+      <!-- Right: Theme Toggle + Clock -->
+      <div class="header-right">
+        <div class="live-clock" id="live-clock">--:--</div>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <!-- ── Search Section ── -->
+    <section class="search-section">
+
+      <div class="search-bar">
+        <span class="search-prefix">🔍</span>
+        <input
+          type="text"
+          id="city-input"
+          placeholder="Search any city..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="search-btn" class="btn btn-search">Search</button>
+      </div>
+
+      <div class="action-btns">
+        <button id="location-btn" class="btn btn-outline">
+          📍 My Location
+        </button>
+        <button id="map-toggle-btn" class="btn btn-outline">
+          🗺️ Pick from Map
+        </button>
+      </div>
+
+      <!-- Recent Searches -->
+      <div class="recent-section" id="recent-section" style="display:none;">
+        <span class="recent-label">🕐 Recent:</span>
+        <div class="recent-chips" id="recent-chips"></div>
+        <button class="clear-recent" id="clear-recent" title="Clear history">✕</button>
+      </div>
+
+    </section>
+
+    <!-- ── Error Message ── -->
+    <div class="error-box" id="error-box">
+      <span id="error-text"></span>
+    </div>
+
+    <!-- ── Loading ── -->
+    <div class="loading-box" id="loading-box">
+      <div class="loader"></div>
+      <p id="loading-text">Fetching weather data...</p>
+    </div>
+
+    <!-- ── Map Section (hidden by default, toggled) ── -->
+    <div class="map-section" id="map-section" style="display:none;">
+      <div class="map-header">
+        <h3>🗺️ Click anywhere on the map to get weather</h3>
+        <button class="btn-close-map" id="close-map">✕ Close Map</button>
+      </div>
+      <div id="map"></div>
+      <p class="map-hint">📌 Click a location → weather loads automatically</p>
+    </div>
+
+    <!-- ===================== WEATHER CONTENT ===================== -->
+    <div class="weather-content" id="weather-content">
+
+      <!-- ── Weather Tip Banner ── -->
+      <div class="tip-banner" id="tip-banner">
+        <span id="tip-text">💡 Tip loads here...</span>
+      </div>
+
+      <!-- ── Main Weather Card ── -->
+      <div class="weather-card" id="weather-card">
+
+        <!-- Top row: City info + Icon -->
+        <div class="card-top">
+          <div class="city-block">
+            <h2 class="city-name" id="city-name">—</h2>
+            <p class="weather-date" id="weather-date">—</p>
+            <p class="local-time" id="local-time">—</p>
+          </div>
+          <div class="icon-block">
+            <img class="weather-icon-big" id="weather-icon" src="" alt="weather" />
+          </div>
+        </div>
+
+        <!-- Mid row: Temperature + Condition -->
+        <div class="card-mid">
+          <div class="temp-big" id="temperature">—</div>
+          <div class="temp-meta">
+            <p class="condition" id="condition">—</p>
+            <p class="feels-like" id="feels-like">—</p>
+            <p class="hi-lo" id="hi-lo">— / —</p>
+          </div>
+        </div>
+
+        <div class="card-divider"></div>
+
+        <!-- Detail Grid -->
+        <div class="details-grid">
+
+          <div class="detail-item">
+            <span class="d-icon">💧</span>
+            <div>
+              <span class="d-label">Humidity</span>
+              <span class="d-value" id="humidity">—</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="d-icon">💨</span>
+            <div>
+              <span class="d-label">Wind</span>
+              <span class="d-value" id="wind-speed">—</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="d-icon">🌡️</span>
+            <div>
+              <span class="d-label">Pressure</span>
+              <span class="d-value" id="pressure">—</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="d-icon">👁️</span>
+            <div>
+              <span class="d-label">Visibility</span>
+              <span class="d-value" id="visibility">—</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="d-icon">🌅</span>
+            <div>
+              <span class="d-label">Sunrise</span>
+              <span class="d-value" id="sunrise">—</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="d-icon">🌇</span>
+            <div>
+              <span class="d-label">Sunset</span>
+              <span class="d-value" id="sunset">—</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- /weather-card -->
+
+      <!-- ── Hourly Forecast Strip ── -->
+      <div class="section-card" id="hourly-section">
+        <h3 class="section-title">⏰ Hourly Forecast</h3>
+        <div class="hourly-scroll" id="hourly-list">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- ── 5-Day Forecast ── -->
+      <div class="section-card">
+        <h3 class="section-title">📅 5-Day Forecast</h3>
+        <div class="forecast-grid" id="forecast-list">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- ── Extra Info Row: UV + Dew Point + Cloud Cover ── -->
+      <div class="extra-row" id="extra-row">
+
+        <div class="extra-card" id="uv-card">
+          <div class="extra-icon">☀️</div>
+          <div class="extra-label">UV Index</div>
+          <div class="extra-value" id="uv-value">—</div>
+          <div class="extra-sub" id="uv-label">—</div>
+        </div>
+
+        <div class="extra-card">
+          <div class="extra-icon">🌫️</div>
+          <div class="extra-label">Cloud Cover</div>
+          <div class="extra-value" id="cloud-value">—</div>
+          <div class="extra-sub">% sky covered</div>
+        </div>
+
+        <div class="extra-card">
+          <div class="extra-icon">🌬️</div>
+          <div class="extra-label">Wind Direction</div>
+          <div class="extra-value wind-arrow" id="wind-dir-arrow">→</div>
+          <div class="extra-sub" id="wind-dir-label">—</div>
+        </div>
+
+        <div class="extra-card">
+          <div class="extra-icon">🌧️</div>
+          <div class="extra-label">Rain Chance</div>
+          <div class="extra-value" id="rain-chance">—</div>
+          <div class="extra-sub">next 3 hours</div>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- /weather-content -->
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <p>Powered by <a href="https://openweathermap.org" target="_blank" rel="noopener">OpenWeather API</a> &nbsp;·&nbsp; Map by <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a></p>
+    <p class="footer-sub">🎓 College Mini-Project &nbsp;|&nbsp; HTML · CSS · JavaScript</p>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App JS -->
+  <script src="script.js"></script>
+
+</body>
+</html>
